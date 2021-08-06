@@ -2,15 +2,15 @@
 // Created by mwo on 5/11/15.
 //
 
-#ifndef LOKEG01_MICROCORE_H
-#define LOKEG01_MICROCORE_H
+#ifndef WTIPSEG01_MICROCORE_H
+#define WTIPSEG01_MICROCORE_H
 
 #include <iostream>
 
-#include "loki_headers.h"
+#include "worktips_headers.h"
 #include "tools.h"
 
-namespace lokeg
+namespace wtipseg
 {
     using namespace cryptonote;
     using namespace crypto;
@@ -92,4 +92,4 @@ namespace lokeg
 
 
 
-#endif //LOKEG01_MICROCORE_H
+#endif //WTIPSEG01_MICROCORE_H

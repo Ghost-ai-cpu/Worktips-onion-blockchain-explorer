@@ -4,7 +4,7 @@
 
 #include "MicroCore.h"
 
-namespace lokeg
+namespace wtipseg
 {
 /**
  * The constructor is interesting, as
@@ -43,7 +43,7 @@ MicroCore::init(const string& blockchain_path_, network_type nt)
     BlockchainDB* db = new BlockchainLMDB();
 
     std::string lns_db_file_path = tools::get_default_data_dir() + "/lns.db";
-    struct sqlite3 *lns_db = lns::init_loki_name_system(lns_db_file_path.c_str());
+    struct sqlite3 *lns_db = lns::init_worktips_name_system(lns_db_file_path.c_str());
 
     try
     {
@@ -152,7 +152,7 @@ MicroCore::get_tx(const string& tx_hash_str, transaction& tx)
     // parse tx hash string to hash object
     crypto::hash tx_hash;
 
-    if (!lokeg::parse_str_secret_key(tx_hash_str, tx_hash))
+    if (!wtipseg::parse_str_secret_key(tx_hash_str, tx_hash))
     {
         cerr << "Cant parse tx hash: " << tx_hash_str << endl;
         return false;

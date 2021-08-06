@@ -12,11 +12,11 @@
 #include <regex>
 
 using boost::filesystem::path;
-using lokeg::remove_bad_chars;
+using wtipseg::remove_bad_chars;
 
 using namespace std;
 
-namespace mylok
+namespace mywtips
 {
 struct jsonresponse: crow::response
 {
@@ -34,7 +34,7 @@ int
 main(int ac, const char* av[])
 {
     // get command line options
-    lokeg::CmdLineOptions opts {ac, av};
+    wtipseg::CmdLineOptions opts {ac, av};
 
     auto help_opt                      = opts.get_option<bool>("help");
 
@@ -101,7 +101,7 @@ main(int ac, const char* av[])
     bool show_cache_times             {*show_cache_times_opt};
 
 
-    // set  loki log output level
+    // set  worktips log output level
     mlog_configure("", true);
     if (log_level)
         mlog_set_log(log_level->c_str());
@@ -150,7 +150,7 @@ main(int ac, const char* av[])
     // get blockchain path
     path blockchain_path;
 
-    if (!lokeg::get_blockchain_path(bc_path_opt, blockchain_path, nettype)) {
+    if (!wtipseg::get_blockchain_path(bc_path_opt, blockchain_path, nettype)) {
       cerr << "Error getting blockchain path." << endl;
       return EXIT_FAILURE;
     }
@@ -160,11 +160,11 @@ main(int ac, const char* av[])
 
     // create instance of our MicroCore
     // and make pointer to the Blockchain
-    lokeg::MicroCore mcore;
+    wtipseg::MicroCore mcore;
     cryptonote::Blockchain* core_storage;
 
     // initialize mcore and core_storage
-    if (!lokeg::init_blockchain(blockchain_path.string(),
+    if (!wtipseg::init_blockchain(blockchain_path.string(),
                                mcore, core_storage, nettype))
     {
         cerr << "Error accessing blockchain." << endl;
@@ -197,48 +197,48 @@ main(int ac, const char* av[])
     {
         // This starts new thread, which aim is
         // to calculate, store and monitor
-        // current total Loki emission amount.
+        // current total Worktips emission amount.
 
         // This thread stores the current emission
         // which it has caluclated in
         // <blockchain_path>/emission_amount.txt file,
-        // e.g., ~/.loki/lmdb/emission_amount.txt.
+        // e.g., ~/.worktips/lmdb/emission_amount.txt.
         // So instead of calcualting the emission
         // from scrach whenever the explorer is started,
         // the thread is initalized with the values
         // found in emission_amount.txt file.
 
-        lokeg::CurrentBlockchainStatus::blockchain_path
+        wtipseg::CurrentBlockchainStatus::blockchain_path
                 = blockchain_path;
-        lokeg::CurrentBlockchainStatus::nettype
+        wtipseg::CurrentBlockchainStatus::nettype
                 = nettype;
-        lokeg::CurrentBlockchainStatus::daemon_url
+        wtipseg::CurrentBlockchainStatus::daemon_url
                 = daemon_url;
-        lokeg::CurrentBlockchainStatus::set_blockchain_variables(
+        wtipseg::CurrentBlockchainStatus::set_blockchain_variables(
                 &mcore, core_storage);
 
         // launch the status monitoring thread so that it keeps track of blockchain
         // info, e.g., current height. Information from this thread is used
         // by tx searching threads that are launched for each user independently,
         // when they log back or create new account.
-        lokeg::CurrentBlockchainStatus::start_monitor_blockchain_thread();
+        wtipseg::CurrentBlockchainStatus::start_monitor_blockchain_thread();
     }
 
 
-    lokeg::MempoolStatus::blockchain_path
+    wtipseg::MempoolStatus::blockchain_path
             = blockchain_path;
-    lokeg::MempoolStatus::nettype
+    wtipseg::MempoolStatus::nettype
             = nettype;
-    lokeg::MempoolStatus::daemon_url
+    wtipseg::MempoolStatus::daemon_url
             = daemon_url;
-    lokeg::MempoolStatus::set_blockchain_variables(
+    wtipseg::MempoolStatus::set_blockchain_variables(
             &mcore, core_storage);
 
-    lokeg::MempoolStatus::network_info initial_info;
+    wtipseg::MempoolStatus::network_info initial_info;
     strcpy(initial_info.block_size_limit_str, "0.0");
     strcpy(initial_info.block_size_median_str, "0.0");
     strcpy(initial_info.total_blockchain_size_str, "0.0");
-    lokeg::MempoolStatus::current_network_info = initial_info;
+    wtipseg::MempoolStatus::current_network_info = initial_info;
 
     try
     {
@@ -256,12 +256,12 @@ main(int ac, const char* av[])
     // info, e.g., current height. Information from this thread is used
     // by tx searching threads that are launched for each user independently,
     // when they log back or create new account.
-    lokeg::MempoolStatus::mempool_refresh_time = mempool_refresh_time;
-    lokeg::MempoolStatus::start_mempool_status_thread();
+    wtipseg::MempoolStatus::mempool_refresh_time = mempool_refresh_time;
+    wtipseg::MempoolStatus::start_mempool_status_thread();
  
     // create instance of page class which
     // contains logic for the website
-    lokeg::page lokblocks(&mcore,
+    wtipseg::page wtipsblocks(&mcore,
                           core_storage,
                           daemon_url,
                           nettype,
@@ -292,49 +292,49 @@ main(int ac, const char* av[])
 
     CROW_ROUTE(app, "/")
     ([&](const crow::request& req) {
-        return crow::response(lokblocks.index2());
+        return crow::response(wtipsblocks.index2());
     });
 
     CROW_ROUTE(app, "/page/<uint>")
     ([&](size_t page_no) {
-        return lokblocks.index2(page_no);
+        return wtipsblocks.index2(page_no);
     });
 
     CROW_ROUTE(app, "/block/<uint>")
     ([&](const crow::request& req, size_t block_height) {
-        return crow::response(lokblocks.show_block(block_height));
+        return crow::response(wtipsblocks.show_block(block_height));
     });
 
     CROW_ROUTE(app, "/block/<string>")
     ([&](const crow::request& req, string block_hash) {
-        return crow::response(lokblocks.show_block(remove_bad_chars(block_hash)));
+        return crow::response(wtipsblocks.show_block(remove_bad_chars(block_hash)));
     });
 
     CROW_ROUTE(app, "/tx/<string>")
     ([&](const crow::request& req, string tx_hash) {
-        return crow::response(lokblocks.show_tx(remove_bad_chars(tx_hash)));
+        return crow::response(wtipsblocks.show_tx(remove_bad_chars(tx_hash)));
     });
 
     if (enable_as_hex)
     {
         CROW_ROUTE(app, "/txhex/<string>")
         ([&](string tx_hash) {
-            return crow::response(lokblocks.show_tx_hex(remove_bad_chars(tx_hash)));
+            return crow::response(wtipsblocks.show_tx_hex(remove_bad_chars(tx_hash)));
         });
 
         CROW_ROUTE(app, "/ringmembershex/<string>")
         ([&](string tx_hash) {
-            return crow::response(lokblocks.show_ringmembers_hex(remove_bad_chars(tx_hash)));
+            return crow::response(wtipsblocks.show_ringmembers_hex(remove_bad_chars(tx_hash)));
         });
 
         CROW_ROUTE(app, "/blockhex/<uint>")
         ([&](size_t block_height) {
-            return crow::response(lokblocks.show_block_hex(block_height, false));
+            return crow::response(wtipsblocks.show_block_hex(block_height, false));
         });
 
         CROW_ROUTE(app, "/blockhexcomplete/<uint>")
         ([&](size_t block_height) {
-            return crow::response(lokblocks.show_block_hex(block_height, true));
+            return crow::response(wtipsblocks.show_block_hex(block_height, true));
         });
 
 //        CROW_ROUTE(app, "/ringmemberstxhex/<string>")
@@ -344,7 +344,7 @@ main(int ac, const char* av[])
 
         CROW_ROUTE(app, "/ringmemberstxhex/<string>")
         ([&](string tx_hash) {
-            return mylok::jsonresponse {lokblocks.show_ringmemberstx_jsonhex(remove_bad_chars(tx_hash))};
+            return mywtips::jsonresponse {wtipsblocks.show_ringmemberstx_jsonhex(remove_bad_chars(tx_hash))};
         });
 
     }
@@ -352,43 +352,43 @@ main(int ac, const char* av[])
     CROW_ROUTE(app, "/tx/<string>/<uint>")
     ([&](string tx_hash, uint16_t with_ring_signatures)
      {
-        return lokblocks.show_tx(remove_bad_chars(tx_hash), with_ring_signatures);
+        return wtipsblocks.show_tx(remove_bad_chars(tx_hash), with_ring_signatures);
     });
 
     CROW_ROUTE(app, "/service_node/<string>")
     ([&](const crow::request& req, std::string service_node_pubkey) {
-        return crow::response(lokblocks.show_service_node(remove_bad_chars(service_node_pubkey)));
+        return crow::response(wtipsblocks.show_service_node(remove_bad_chars(service_node_pubkey)));
     });
 
     CROW_ROUTE(app, "/service_nodes")
     ([&](const crow::request& req) {
-        return lokblocks.render_service_nodes_html(true /*add_header_and_footer*/);
+        return wtipsblocks.render_service_nodes_html(true /*add_header_and_footer*/);
     });
 
     CROW_ROUTE(app, "/quorums")
     ([&](const crow::request& req) {
-        return lokblocks.render_quorum_states_html(true /*add_header_and_footer*/);
+        return wtipsblocks.render_quorum_states_html(true /*add_header_and_footer*/);
     });
 
     CROW_ROUTE(app, "/checkpoint_quorum/<uint>")
     ([&](const crow::request& req, uint64_t height) {
-        return lokblocks.render_single_quorum_html(service_nodes::quorum_type::checkpointing, height);
+        return wtipsblocks.render_single_quorum_html(service_nodes::quorum_type::checkpointing, height);
     });
 
     CROW_ROUTE(app, "/obligations_quorum/<uint>")
     ([&](const crow::request& req, uint64_t height) {
-        return lokblocks.render_single_quorum_html(service_nodes::quorum_type::obligations, height);
+        return wtipsblocks.render_single_quorum_html(service_nodes::quorum_type::obligations, height);
     });
 
     CROW_ROUTE(app, "/checkpoints")
     ([&](const crow::request& req) {
-        return lokblocks.render_checkpoints_html(true /*add_header_and_footer*/);
+        return wtipsblocks.render_checkpoints_html(true /*add_header_and_footer*/);
     });
 
-    // TODO(loki): This should be combined into the normal search mechanism, we shouldn't have 2 search bars.
+    // TODO(worktips): This should be combined into the normal search mechanism, we shouldn't have 2 search bars.
     CROW_ROUTE(app, "/search_service_node").methods("GET"_method)
     ([&](const crow::request& req) {
-        return lokblocks.show_service_node(remove_bad_chars(string(req.url_params.get("value"))));
+        return wtipsblocks.show_service_node(remove_bad_chars(string(req.url_params.get("value"))));
     });
 
 
@@ -397,17 +397,17 @@ main(int ac, const char* av[])
      {
 
         map<std::string, std::string> post_body
-                = lokeg::parse_crow_post_data(req.body);
+                = wtipseg::parse_crow_post_data(req.body);
 
-        if (post_body.count("lok_address") == 0
+        if (post_body.count("wtips_address") == 0
             || post_body.count("viewkey") == 0
             || post_body.count("tx_hash") == 0)
         {
-            return string("lok address, viewkey or tx hash not provided");
+            return string("wtips address, viewkey or tx hash not provided");
         }
 
         string tx_hash     = remove_bad_chars(post_body["tx_hash"]);
-        string lok_address = remove_bad_chars(post_body["lok_address"]);
+        string wtips_address = remove_bad_chars(post_body["wtips_address"]);
         string viewkey     = remove_bad_chars(post_body["viewkey"]);
 
         // this will be only not empty when checking raw tx data
@@ -416,20 +416,20 @@ main(int ac, const char* av[])
 
         string domain      =  get_domain(req);
 
-        return lokblocks.show_my_outputs(tx_hash, lok_address,
+        return wtipsblocks.show_my_outputs(tx_hash, wtips_address,
                                          viewkey, raw_tx_data,
                                          domain);
     });
 
     CROW_ROUTE(app, "/myoutputs/<string>/<string>/<string>")
     ([&](const crow::request& req, string tx_hash,
-        string lok_address, string viewkey)
+        string wtips_address, string viewkey)
      {
 
         string domain = get_domain(req);
 
-        return lokblocks.show_my_outputs(remove_bad_chars(tx_hash),
-                                         remove_bad_chars(lok_address),
+        return wtipsblocks.show_my_outputs(remove_bad_chars(tx_hash),
+                                         remove_bad_chars(wtips_address),
                                          remove_bad_chars(viewkey),
                                          string {},
                                          domain);
@@ -439,19 +439,19 @@ main(int ac, const char* av[])
         ([&](const crow::request& req) {
 
             map<std::string, std::string> post_body
-                    = lokeg::parse_crow_post_data(req.body);
+                    = wtipseg::parse_crow_post_data(req.body);
 
-            if (post_body.count("lokaddress") == 0
+            if (post_body.count("wtipsaddress") == 0
                 || post_body.count("txprvkey") == 0
                 || post_body.count("txhash") == 0)
             {
-                return string("lok address, tx private key or "
+                return string("wtips address, tx private key or "
                                       "tx hash not provided");
             }
 
             string tx_hash     = remove_bad_chars(post_body["txhash"]);
             string tx_prv_key  = remove_bad_chars(post_body["txprvkey"]);
-            string lok_address = remove_bad_chars(post_body["lokaddress"]);
+            string wtips_address = remove_bad_chars(post_body["wtipsaddress"]);
 
             // this will be only not empty when checking raw tx data
             // using tx pusher
@@ -459,8 +459,8 @@ main(int ac, const char* av[])
 
             string domain      = get_domain(req);
 
-            return lokblocks.show_prove(tx_hash,
-                                        lok_address,
+            return wtipsblocks.show_prove(tx_hash,
+                                        wtips_address,
                                         tx_prv_key,
                                         raw_tx_data,
                                         domain);
@@ -469,12 +469,12 @@ main(int ac, const char* av[])
 
     CROW_ROUTE(app, "/prove/<string>/<string>/<string>")
     ([&](const crow::request& req, string tx_hash,
-         string lok_address, string tx_prv_key) {
+         string wtips_address, string tx_prv_key) {
 
         string domain = get_domain(req);
 
-        return lokblocks.show_prove(remove_bad_chars(tx_hash),
-                                    remove_bad_chars(lok_address),
+        return wtipsblocks.show_prove(remove_bad_chars(tx_hash),
+                                    remove_bad_chars(wtips_address),
                                     remove_bad_chars(tx_prv_key),
                                     string {},
                                     domain);
@@ -484,14 +484,14 @@ main(int ac, const char* av[])
     {
         CROW_ROUTE(app, "/rawtx")
         ([&](const crow::request& req) {
-            return lokblocks.show_rawtx();
+            return wtipsblocks.show_rawtx();
         });
 
         CROW_ROUTE(app, "/checkandpush").methods("POST"_method)
         ([&](const crow::request& req) {
 
             map<std::string, std::string> post_body
-                    = lokeg::parse_crow_post_data(req.body);
+                    = wtipseg::parse_crow_post_data(req.body);
 
             if (post_body.count("rawtxdata") == 0 || post_body.count("action") == 0)
             {
@@ -502,9 +502,9 @@ main(int ac, const char* av[])
             string action      = remove_bad_chars(post_body["action"]);
 
             if (action == "check")
-                return lokblocks.show_checkrawtx(raw_tx_data, action);
+                return wtipsblocks.show_checkrawtx(raw_tx_data, action);
             else if (action == "push")
-                return lokblocks.show_pushrawtx(raw_tx_data, action);
+                return wtipsblocks.show_pushrawtx(raw_tx_data, action);
             return string("Provided action is neither check nor push");
 
         });
@@ -514,14 +514,14 @@ main(int ac, const char* av[])
     {
         CROW_ROUTE(app, "/rawkeyimgs")
         ([&](const crow::request& req) {
-            return lokblocks.show_rawkeyimgs();
+            return wtipsblocks.show_rawkeyimgs();
         });
 
         CROW_ROUTE(app, "/checkrawkeyimgs").methods("POST"_method)
         ([&](const crow::request& req) {
 
             map<std::string, std::string> post_body
-                    = lokeg::parse_crow_post_data(req.body);
+                    = wtipseg::parse_crow_post_data(req.body);
 
             if (post_body.count("rawkeyimgsdata") == 0)
             {
@@ -536,7 +536,7 @@ main(int ac, const char* av[])
             string raw_data = remove_bad_chars(post_body["rawkeyimgsdata"]);
             string viewkey  = remove_bad_chars(post_body["viewkey"]);
 
-            return lokblocks.show_checkrawkeyimgs(raw_data, viewkey);
+            return wtipsblocks.show_checkrawkeyimgs(raw_data, viewkey);
         });
     }
 
@@ -545,14 +545,14 @@ main(int ac, const char* av[])
     {
         CROW_ROUTE(app, "/rawoutputkeys")
         ([&](const crow::request& req) {
-            return lokblocks.show_rawoutputkeys();
+            return wtipsblocks.show_rawoutputkeys();
         });
 
         CROW_ROUTE(app, "/checkrawoutputkeys").methods("POST"_method)
         ([&](const crow::request& req) {
 
             map<std::string, std::string> post_body
-                    = lokeg::parse_crow_post_data(req.body);
+                    = wtipseg::parse_crow_post_data(req.body);
 
             if (post_body.count("rawoutputkeysdata") == 0)
             {
@@ -568,30 +568,30 @@ main(int ac, const char* av[])
             string raw_data = remove_bad_chars(post_body["rawoutputkeysdata"]);
             string viewkey  = remove_bad_chars(post_body["viewkey"]);
 
-            return lokblocks.show_checkcheckrawoutput(raw_data, viewkey);
+            return wtipsblocks.show_checkcheckrawoutput(raw_data, viewkey);
         });
     }
 
 
     CROW_ROUTE(app, "/search").methods("GET"_method)
     ([&](const crow::request& req) {
-        return lokblocks.search(remove_bad_chars(string(req.url_params.get("value"))));
+        return wtipsblocks.search(remove_bad_chars(string(req.url_params.get("value"))));
     });
 
     CROW_ROUTE(app, "/mempool")
     ([&](const crow::request& req) {
-        return lokblocks.mempool(true);
+        return wtipsblocks.mempool(true);
     });
 
     // alias to  "/mempool"
     CROW_ROUTE(app, "/txpool")
     ([&](const crow::request& req) {
-        return lokblocks.mempool(true);
+        return wtipsblocks.mempool(true);
     });
 
 //    CROW_ROUTE(app, "/altblocks")
 //    ([&](const crow::request& req) {
-//        return lokblocks.altblocks();
+//        return wtipsblocks.altblocks();
 //    });
 
     CROW_ROUTE(app, "/robots.txt")
@@ -607,54 +607,54 @@ main(int ac, const char* av[])
 
         CROW_ROUTE(app, "/js/jquery.min.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("jquery.min.js");
+            return wtipsblocks.get_js_file("jquery.min.js");
         });
 
         CROW_ROUTE(app, "/js/crc32.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("crc32.js");
+            return wtipsblocks.get_js_file("crc32.js");
         });
 
         CROW_ROUTE(app, "/js/biginteger.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("biginteger.js");
+            return wtipsblocks.get_js_file("biginteger.js");
         });
 
         CROW_ROUTE(app, "/js/crypto.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("crypto.js");
+            return wtipsblocks.get_js_file("crypto.js");
         });
 
         CROW_ROUTE(app, "/js/config.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("config.js");
+            return wtipsblocks.get_js_file("config.js");
         });
 
         CROW_ROUTE(app, "/js/nacl-fast-cn.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("nacl-fast-cn.js");
+            return wtipsblocks.get_js_file("nacl-fast-cn.js");
         });
 
         CROW_ROUTE(app, "/js/base58.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("base58.js");
+            return wtipsblocks.get_js_file("base58.js");
         });
 
         CROW_ROUTE(app, "/js/cn_util.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("cn_util.js");
+            return wtipsblocks.get_js_file("cn_util.js");
         });
 
         CROW_ROUTE(app, "/js/sha3.js")
         ([&](const crow::request& req) {
-            return lokblocks.get_js_file("sha3.js");
+            return wtipsblocks.get_js_file("sha3.js");
         });
 
         CROW_ROUTE(app, "/js/all_in_one.js")
         ([&]() {
             // /js/all_in_one.js file does not exist. it is generated on the fly
             // from the above real files.
-            return lokblocks.get_js_file("all_in_one.js");
+            return wtipsblocks.get_js_file("all_in_one.js");
         });
 
     } // if (enable_js)
@@ -667,7 +667,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/transaction/<string>")
         ([&](string tx_hash) {
 
-            mylok::jsonresponse r{lokblocks.json_transaction(remove_bad_chars(tx_hash))};
+            mywtips::jsonresponse r{wtipsblocks.json_transaction(remove_bad_chars(tx_hash))};
 
             return r;
         });
@@ -675,7 +675,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/rawtransaction/<string>")
         ([&](string tx_hash) {
 
-            mylok::jsonresponse r{lokblocks.json_rawtransaction(remove_bad_chars(tx_hash))};
+            mywtips::jsonresponse r{wtipsblocks.json_rawtransaction(remove_bad_chars(tx_hash))};
 
             return r;
         });
@@ -683,7 +683,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/detailedtransaction/<string>")
         ([&](string tx_hash) {
 
-            mylok::jsonresponse r{lokblocks.json_detailedtransaction(remove_bad_chars(tx_hash))};
+            mywtips::jsonresponse r{wtipsblocks.json_detailedtransaction(remove_bad_chars(tx_hash))};
 
             return r;
         });
@@ -691,7 +691,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/block/<string>")
         ([&](string block_no_or_hash) {
 
-            mylok::jsonresponse r{lokblocks.json_block(remove_bad_chars(block_no_or_hash))};
+            mywtips::jsonresponse r{wtipsblocks.json_block(remove_bad_chars(block_no_or_hash))};
 
             return r;
         });
@@ -699,7 +699,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/rawblock/<string>")
         ([&](string block_no_or_hash) {
 
-            mylok::jsonresponse r{lokblocks.json_rawblock(remove_bad_chars(block_no_or_hash))};
+            mywtips::jsonresponse r{wtipsblocks.json_rawblock(remove_bad_chars(block_no_or_hash))};
 
             return r;
         });
@@ -713,7 +713,7 @@ main(int ac, const char* av[])
             string limit = regex_search(req.raw_url, regex {"limit=\\d+"}) ?
                            req.url_params.get("limit") : "25";
 
-            mylok::jsonresponse r{lokblocks.json_transactions(
+            mywtips::jsonresponse r{wtipsblocks.json_transactions(
                     remove_bad_chars(page), remove_bad_chars(limit))};
 
             return r;
@@ -731,7 +731,7 @@ main(int ac, const char* av[])
             string limit = regex_search(req.raw_url, regex {"limit=\\d+"}) ?
                            req.url_params.get("limit") : "100000000";
 
-            mylok::jsonresponse r{lokblocks.json_mempool(
+            mywtips::jsonresponse r{wtipsblocks.json_mempool(
                     remove_bad_chars(page), remove_bad_chars(limit))};
 
             return r;
@@ -740,7 +740,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/search/<string>")
         ([&](string search_value) {
 
-            mylok::jsonresponse r{lokblocks.json_search(remove_bad_chars(search_value))};
+            mywtips::jsonresponse r{wtipsblocks.json_search(remove_bad_chars(search_value))};
 
             return r;
         });
@@ -748,7 +748,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/networkinfo")
         ([&]() {
 
-            mylok::jsonresponse r{lokblocks.json_networkinfo()};
+            mywtips::jsonresponse r{wtipsblocks.json_networkinfo()};
 
             return r;
         });
@@ -756,12 +756,12 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/emission")
         ([&]() {
 
-            mylok::jsonresponse r{lokblocks.json_emission()};
+            mywtips::jsonresponse r{wtipsblocks.json_emission()};
             return r;
         });
 
         CROW_ROUTE(app, "/api/circulating_supply") ([&]() {
-            std::string result = std::to_string(lokeg::CurrentBlockchainStatus::get_emission().coinbase / COIN);
+            std::string result = std::to_string(wtipseg::CurrentBlockchainStatus::get_emission().coinbase / COIN);
             return std::move(result);
         });
 
@@ -790,7 +790,7 @@ main(int ac, const char* av[])
                 cerr << "Cant parse tx_prove as bool. Using default value" << endl;
             }
 
-            mylok::jsonresponse r{lokblocks.json_outputs(
+            mywtips::jsonresponse r{wtipsblocks.json_outputs(
                     remove_bad_chars(tx_hash),
                     remove_bad_chars(address),
                     remove_bad_chars(viewkey),
@@ -824,7 +824,7 @@ main(int ac, const char* av[])
                 cerr << "Cant parse tx_prove as bool. Using default value" << endl;
             }
 
-            mylok::jsonresponse r{lokblocks.json_outputsblocks(
+            mywtips::jsonresponse r{wtipsblocks.json_outputsblocks(
                     remove_bad_chars(limit),
                     remove_bad_chars(address),
                     remove_bad_chars(viewkey),
@@ -836,7 +836,7 @@ main(int ac, const char* av[])
         CROW_ROUTE(app, "/api/version")
         ([&]() {
 
-            mylok::jsonresponse r{lokblocks.json_version()};
+            mywtips::jsonresponse r{wtipsblocks.json_version()};
 
             return r;
         });
@@ -849,7 +849,7 @@ main(int ac, const char* av[])
         ([&]() {
             uint64_t page_no {0};
             bool refresh_page {true};
-            return lokblocks.index2(page_no, refresh_page);
+            return wtipsblocks.index2(page_no, refresh_page);
         });
     }
 
@@ -874,8 +874,8 @@ main(int ac, const char* av[])
 
         cout << "Waiting for emission monitoring thread to finish." << endl;
 
-        lokeg::CurrentBlockchainStatus::m_thread.interrupt();
-        lokeg::CurrentBlockchainStatus::m_thread.join();
+        wtipseg::CurrentBlockchainStatus::m_thread.interrupt();
+        wtipseg::CurrentBlockchainStatus::m_thread.join();
 
         cout << "Emission monitoring thread finished." << endl;
     }
@@ -884,8 +884,8 @@ main(int ac, const char* av[])
 
     cout << "Waiting for mempool monitoring thread to finish." << endl;
 
-    lokeg::MempoolStatus::m_thread.interrupt();
-    lokeg::MempoolStatus::m_thread.join();
+    wtipseg::MempoolStatus::m_thread.interrupt();
+    wtipseg::MempoolStatus::m_thread.join();
 
     cout << "Mempool monitoring thread finished." << endl;
 

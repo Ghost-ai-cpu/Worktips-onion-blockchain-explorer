@@ -2,8 +2,8 @@
 // Created by mwo on 6/11/15.
 //
 
-#ifndef LOKEG01_CMDLINEOPTIONS_H
-#define LOKEG01_CMDLINEOPTIONS_H
+#ifndef WTIPSEG01_CMDLINEOPTIONS_H
+#define WTIPSEG01_CMDLINEOPTIONS_H
 
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@
 #include <boost/program_options.hpp>
 #include <boost/optional.hpp>
 
-namespace lokeg
+namespace wtipseg
 {
 
     using namespace std;
@@ -34,4 +34,4 @@ namespace lokeg
 }
 
 
-#endif //LOKEG01_CMDLINEOPTIONS_H
+#endif //WTIPSEG01_CMDLINEOPTIONS_H

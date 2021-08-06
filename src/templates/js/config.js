@@ -2,12 +2,12 @@ var config = {
     testnet: false, // this is adjusted page.h if needed. dont need to change manually
     stagenet: false, // this is adjusted page.h if needed. dont need to change manually
     coinUnitPlaces: 9,
-    txMinConfirms: 10,         // corresponds to CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE in Loki
-    txCoinbaseMinConfirms: 60, // corresponds to CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW in Loki
-    coinSymbol: 'LOK',
-    openAliasPrefix: "lok",
-    coinName: 'Loki',
-    coinUriPrefix: 'loki:',
+    txMinConfirms: 10,         // corresponds to CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE in Worktips
+    txCoinbaseMinConfirms: 60, // corresponds to CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW in Worktips
+    coinSymbol: 'WTIPS',
+    openAliasPrefix: "wtips",
+    coinName: 'Worktips',
+    coinUriPrefix: 'worktips:',
     addressPrefix: 114,
     integratedAddressPrefix: 115,
     subAddressPrefix: 116,

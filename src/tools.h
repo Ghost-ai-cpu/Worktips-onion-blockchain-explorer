@@ -2,10 +2,10 @@
 // Created by mwo on 5/11/15.
 //
 
-#ifndef LOKEG01_TOOLS_H
-#define LOKEG01_TOOLS_H
+#ifndef WTIPSEG01_TOOLS_H
+#define WTIPSEG01_TOOLS_H
 
-#include "loki_headers.h"
+#include "worktips_headers.h"
 
 #include "../ext/fmt/ostream.h"
 #include "../ext/fmt/format.h"
@@ -26,7 +26,7 @@
 constexpr char PATH_SEPARATOR('/');
 
 constexpr double
-LOK_AMOUNT(double value)
+WTIPS_AMOUNT(double value)
 {
     return value / 1e9;
 }
@@ -42,7 +42,7 @@ REMOVE_HASH_BRACKETS(const std::string & a_hash)
  * Names are rather self-explanatory, so I think
  * there is no reason for any detailed explanations here
  */
-namespace lokeg
+namespace wtipseg
 {
 
 using namespace cryptonote;
@@ -226,9 +226,9 @@ get_payment_id(const transaction& tx,
 
 
 inline double
-get_lok(uint64_t core_amount)
+get_wtips(uint64_t core_amount)
 {
-    return LOK_AMOUNT(core_amount);
+    return WTIPS_AMOUNT(core_amount);
 }
 
 array<size_t, 5>
@@ -277,7 +277,7 @@ get_tx_pub_key_from_received_outs(const transaction &tx);
 
 static
 string
-lok_amount_to_str(const uint64_t& lok_amount,
+wtips_amount_to_str(const uint64_t& wtips_amount,
                   string _format="{:0.9f}",
                   bool zero_to_question_mark=true)
 {
@@ -285,13 +285,13 @@ lok_amount_to_str(const uint64_t& lok_amount,
 
     if (!zero_to_question_mark)
     {
-        amount_str = fmt::format(_format, LOK_AMOUNT(lok_amount));
+        amount_str = fmt::format(_format, WTIPS_AMOUNT(wtips_amount));
     }
     else
     {
-        if (lok_amount > 0 && zero_to_question_mark == true)
+        if (wtips_amount > 0 && zero_to_question_mark == true)
         {
-            amount_str = fmt::format(_format, LOK_AMOUNT(lok_amount));
+            amount_str = fmt::format(_format, WTIPS_AMOUNT(wtips_amount));
         }
     }
 
@@ -394,4 +394,4 @@ tx_to_hex(transaction const& tx);
 
 }
 
-#endif //LOKEG01_TOOLS_H
+#endif //WTIPSEG01_TOOLS_H

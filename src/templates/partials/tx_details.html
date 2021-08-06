@@ -133,7 +133,7 @@
         <div class="TitleDivider"></div>
         <p>Service Node Public Key: {{contribution_service_node_pubkey}}</p>
         <p>Contributor Address: {{contribution_address}}</p>
-        <p>Contribution Amount: {{contribution_amount}} LOKI</p>
+        <p>Contribution Amount: {{contribution_amount}} WTIPS</p>
     {{/have_contribution_info}}
 
     {{#have_unlock_info}}
@@ -145,7 +145,7 @@
 
 
   <h2>Outputs</h2>
-  <h4 class="Subtitle">{{outputs_no}} output(s) for total of {{outputs_lok_sum}} lok</h4>
+  <h4 class="Subtitle">{{outputs_no}} output(s) for total of {{outputs_wtips_sum}} wtips</h4>
   <div class="TitleDivider"></div>
   <div>
       <table class="Table">
@@ -171,7 +171,7 @@
                 <input type="radio" id="tab-1" name="tab-group-1" checked>
                 <label for="tab-1">Decode Outputs</label>
                 <div class="content">
-                    <p style="margin: 0px">Check which outputs belong to given Loki address/subaddress and viewkey</p>
+                    <p style="margin: 0px">Check which outputs belong to given Worktips address/subaddress and viewkey</p>
                     <p style="margin: 0px">
                         For RingCT transactions, outputs' amounts are also decoded
                         <br/>
@@ -184,7 +184,7 @@
                     </p>
                     <form action="/myoutputs" method="post" style="width:100%; margin-top:2px" class="style-1">
                         <input type="hidden" name="tx_hash" value="{{tx_hash}}"><br/>
-                        <input type="text" name="lok_address" size="110" placeholder="Loki Address/Subaddress"><br/>
+                        <input type="text" name="wtips_address" size="110" placeholder="Worktips Address/Subaddress"><br/>
                         <input type="text" name="viewkey" size="110" placeholder="Private Viewkey" style="margin-top:5px"><br/>
                         <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}">
                         <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
@@ -206,10 +206,10 @@
                 <label for="tab-2">Prove Sending</label>
 
                 <div class="content">
-                    <p style="margin: 0px">Prove to someone that you have sent them Loki in this transaction</p>
+                    <p style="margin: 0px">Prove to someone that you have sent them Worktips in this transaction</p>
                     <p style="margin: 0px">
                         TX private key can be obtained using <i>get_tx_key</i>
-                        command in  <i>loki-wallet-cli</i> command line tool
+                        command in  <i>worktips-wallet-cli</i> command line tool
                         <br/>
                         {{#enable_js}}
                             Note: Address/Subaddress and TX private key are NOT sent to the server, as the calculations are done on the client side
@@ -223,7 +223,7 @@
                        <input type="text" name="txprvkey" size="120" placeholder="TX Private Key"><br/>
                         <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}">
                         <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
-                       <input type="text" name="lokaddress" size="120" placeholder="Recipient's Loki Address/Subaddress" style="margin-top:5px"><br/>
+                       <input type="text" name="wtipsaddress" size="120" placeholder="Recipient's Worktips Address/Subaddress" style="margin-top:5px"><br/>
 
                         {{#enable_js}}
                             <!-- if have js, DONOT submit the form to server.
@@ -273,7 +273,7 @@
 
                 $("#decode_btn").click(function() {
 
-                    var address = $("input[name=lok_address]").val().trim();
+                    var address = $("input[name=wtips_address]").val().trim();
                     var viewkey = $("input[name=viewkey]").val().trim();
 
                     if (!address || !viewkey) {
@@ -298,7 +298,7 @@
 
                 $("#prove_btn").click(function() {
 
-                    var address    = $("input[name=lokaddress]").val().trim();
+                    var address    = $("input[name=wtipsaddress]").val().trim();
                     var tx_prv_key = $("input[name=txprvkey]").val().trim();
 
                     if (!address || !tx_prv_key) {
@@ -445,7 +445,7 @@
 
                 decoding_results_str += "</table>";
 
-                decoding_results_str += "<h3>Sum LOK from matched outputs (i.e., incoming LOK): " + (sum_outptus / 1e9) + "</h3>"
+                decoding_results_str += "<h3>Sum WTIPS from matched outputs (i.e., incoming WTIPS): " + (sum_outptus / 1e9) + "</h3>"
 
 
                 // decrypt payment_id8 which results in using
@@ -487,17 +487,17 @@
       </div>
     {{/enable_mixins_details}}
 
-    {{^inputs_lok_sum_not_zero}}
-        <h3>{{inputs_no}} input(s) for total of {{inputs_lok_sum}} lok</h3>
-    {{/inputs_lok_sum_not_zero}}
-    {{#inputs_lok_sum_not_zero}}
+    {{^inputs_wtips_sum_not_zero}}
+        <h3>{{inputs_no}} input(s) for total of {{inputs_wtips_sum}} wtips</h3>
+    {{/inputs_wtips_sum_not_zero}}
+    {{#inputs_wtips_sum_not_zero}}
         {{^have_any_unknown_amount}}
-            <h3>{{inputs_no}} inputs(s) for total of {{inputs_lok_sum}} lok</h3>
+            <h3>{{inputs_no}} inputs(s) for total of {{inputs_wtips_sum}} wtips</h3>
         {{/have_any_unknown_amount}}
         {{#have_any_unknown_amount}}
-            <h3>{{inputs_no}} inputs(s) for total of at least {{inputs_lok_sum}} lok</h3>
+            <h3>{{inputs_no}} inputs(s) for total of at least {{inputs_wtips_sum}} wtips</h3>
         {{/have_any_unknown_amount}}
-    {{/inputs_lok_sum_not_zero}}
+    {{/inputs_wtips_sum_not_zero}}
 
     {{#show_part_of_inputs}}
         <p style="margin-top: 2px">
