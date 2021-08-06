@@ -42,9 +42,6 @@ MicroCore::init(const string& blockchain_path_, network_type nt)
     int db_flags    = DBF_RDONLY;
     BlockchainDB* db = new BlockchainLMDB();
 
-    std::string lns_db_file_path = tools::get_default_data_dir() + "/lns.db";
-    struct sqlite3 *lns_db = lns::init_worktips_name_system(lns_db_file_path.c_str());
-
     try
     {
         // try opening lmdb database files
@@ -63,7 +60,7 @@ MicroCore::init(const string& blockchain_path_, network_type nt)
 
     // initialize Blockchain object to manage
     // the database.
-    return m_blockchain_storage.init(db, lns_db, nettype);
+    return m_blockchain_storage.init(db, nettype);
 }
 
 /**

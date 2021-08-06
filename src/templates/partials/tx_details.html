@@ -434,7 +434,7 @@
                     decoding_results_str += "<tr>"
                         +"<td>" + output_idx +  "</td>"
                         +"<td>" + output_pub_key +  "</td>"
-                        +"<td>" + (amount / 1e9) +  "</td>"
+                        +"<td>" + (amount / 1e8) +  "</td>"
                         +"<td>" + mine_output_str +  "</td>"
                         +"</tr>";
 
@@ -445,7 +445,7 @@
 
                 decoding_results_str += "</table>";
 
-                decoding_results_str += "<h3>Sum WTIPS from matched outputs (i.e., incoming WTIPS): " + (sum_outptus / 1e9) + "</h3>"
+                decoding_results_str += "<h3>Sum WTIPS from matched outputs (i.e., incoming WTIPS): " + (sum_outptus / 1e8) + "</h3>"
 
 
                 // decrypt payment_id8 which results in using

@@ -298,7 +298,7 @@ BigInteger.radixRegex = [
 	If no base is provided, or *base* is 10, the number can be in exponential
 	form. For example, these are all valid:
 
-	> BigInteger.parse("1e9");              // Same as "1000000000"
+	> BigInteger.parse("1e8");              // Same as "100000000"
 	> BigInteger.parse("1.234*10^3");       // Same as 1234
 	> BigInteger.parse("56789 * 10 ** -2"); // Same as 567
 

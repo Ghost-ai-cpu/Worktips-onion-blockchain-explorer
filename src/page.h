@@ -1109,7 +1109,7 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
         uint64_t amount = get_amount_from_stake(tx, contributor);
         context["contribution_amount"] = amount > 0 ? wtipseg::wtips_amount_to_str(amount, "{:0.9f}", true) : "<decode error>";
     }
-    else if (tx.version >= txversion::v4_tx_types && tx.type == txtype::worktips_name_system)
+   /* else if (tx.version >= txversion::v4_tx_types && tx.type == txtype::worktips_name_system)
     {
       tx_extra_worktips_name_system lns_extra = {};
       if (get_worktips_name_system_from_tx_extra(tx.extra, lns_extra))
@@ -1117,7 +1117,7 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
           if (lns_extra.is_buying()) context["lns_buying"] = true;
           else context["lns_updating"] = true;
       }
-    }
+    }*/
 }
 
 /**

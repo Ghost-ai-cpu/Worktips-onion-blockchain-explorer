@@ -28,7 +28,7 @@ constexpr char PATH_SEPARATOR('/');
 constexpr double
 WTIPS_AMOUNT(double value)
 {
-    return value / 1e9;
+    return value / 1e8;
 }
 
 inline std::string

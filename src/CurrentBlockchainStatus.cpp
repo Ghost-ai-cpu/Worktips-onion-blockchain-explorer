@@ -23,16 +23,12 @@ CurrentBlockchainStatus::set_blockchain_variables(MicroCore* _mcore,
 }
 
 using BlockHeight = uint64_t;
-uint64_t const founders_locked_worktips            = 1215000 * COIN;
-uint64_t const seed_locked_worktips                = 581000 * COIN;
-uint64_t const half_seed_locked_worktips           = seed_locked_worktips * COIN / 2;
+uint64_t const founders_locked_worktips            = 1 * COIN;
+uint64_t const seed_locked_worktips                = 1 * COIN;
+uint64_t const half_seed_locked_worktips           = seed_locked_worktips * COIN / 1;
 static std::map<BlockHeight, uint64_t> time_locked_worktips =
 {
-    {0,      871500 * COIN},
-    {69456,  founders_locked_worktips + seed_locked_worktips},
-    {134079, founders_locked_worktips + seed_locked_worktips},
-    {198639, founders_locked_worktips + seed_locked_worktips},
-    {263423, founders_locked_worktips + half_seed_locked_worktips}
+    {0,      859  * COIN}
 };
 
 void
