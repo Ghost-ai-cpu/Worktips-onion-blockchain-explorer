@@ -34,13 +34,6 @@
  - can decode encrypted payment id,
  - can decode outputs and proving txs sent to sub-address.
 
-## Development branch
-
-Current development branch:
-
- - https://github.com/doy-lee/onion-worktips-blockchain-explorer/tree/worktips
-
-
 
 ## Compilation on Ubuntu 16.04/18.04
 
@@ -74,10 +67,10 @@ as follows:
 cd ~
 
 # download the source code
-git clone https://github.com/worktips-project/worktips-onion-blockchain-explorer.git
+git clone https://github.com/Ghost-ai-cpu/Worktips-onion-blockchain-explorer.git
 
 # enter the downloaded sourced code folder
-cd worktips-onion-blockchain-explorer
+cd Worktips-onion-blockchain-explorer
 
 # make a build folder and enter it
 mkdir build && cd build
