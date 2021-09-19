@@ -73,7 +73,7 @@ namespace wtipseg
                  "path to crt file for ssl (https) functionality")
                 ("ssl-key-file", value<string>(),
                  "path to key file for ssl (https) functionality")
-                ("daemon-url,d", value<string>()->default_value("http:://127.0.0.1:22023"),
+                ("daemon-url,d", value<string>()->default_value("http:://127.0.0.1:31022"),
                  "Worktips daemon url")
                 ("log-level", value<string>(),
                  "set log level");
